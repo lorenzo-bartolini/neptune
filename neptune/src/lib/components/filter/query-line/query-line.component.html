@@ -1,0 +1,13 @@
+
+<div fxLayout="row" fxLayoutAlign="space-between center">
+  <!-- field -->
+  <app-dropdown label="Field" [(value)]="entityLine.field" [options]="fieldOptions" (valueChange)="onFieldSelected($event)"></app-dropdown>
+  <!-- operator -->
+  <app-dropdown label="Operator" [(value)]="entityLine.operator" [options]="operatorOptions" (valueChange)="onOperatorSelected($event)"></app-dropdown>
+  <!-- value -->
+  <app-dropdown label="Value" [(value)]="entityLine.value" [options]="valueOptions" (valueChange)="onValueSelected($event)"></app-dropdown>
+
+  <ng-container *ngTemplateOutlet="buttonTemplate"></ng-container>
+
+
+</div>

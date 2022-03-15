@@ -1,0 +1,53 @@
+
+  <form [formGroup]="filter">
+
+    <mat-form-field appearance="fill">
+      <mat-label>From</mat-label>
+      <input
+        type="text"
+        placeholder="Pick one"
+        aria-label="Number"
+        matInput
+        formControlName="from"
+        [matAutocomplete]="autoFrom"
+      />
+      <button matSuffix mat-icon-button aria-label="Search">
+        <mat-icon>search</mat-icon>
+      </button>
+
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>To</mat-label>
+      <input
+        type="text"
+        placeholder="Pick one"
+        aria-label="Number"
+        matInput
+        formControlName="to"
+        [matAutocomplete]="autoTo"
+      />
+      <button matSuffix mat-icon-button aria-label="Search">
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <mat-autocomplete #autoFrom="matAutocomplete" [displayWith]="displayEntitiesFn">
+      <mat-option
+        *ngFor="let option of filteredEntitiesFrom | async"
+        [value]="option"
+      >
+        {{ option }}
+      </mat-option>
+    </mat-autocomplete>
+
+    <mat-autocomplete #autoTo="matAutocomplete" [displayWith]="displayEntitiesFn">
+      <mat-option
+        *ngFor="let option of filteredEntitiesTo | async"
+        [value]="option"
+      >
+        {{ option }}
+      </mat-option>
+    </mat-autocomplete>
+  </form>
+

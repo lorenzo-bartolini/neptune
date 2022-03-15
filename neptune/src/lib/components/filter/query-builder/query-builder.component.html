@@ -1,0 +1,25 @@
+<div fxLayout="column">
+  <mat-card *ngFor="let entity of entities; let e = index">
+    <app-dropdown label="Entity" [value]="entity.entity" [options]="entityOptions" (onSelected)="onEntitySelected($event, e)"></app-dropdown>
+    <div *ngFor="let line of entity.lines; let i = index">
+      <div fxLayout="row">
+        <app-query-line [entityLine]="line" [entityName]="entity.entity" [buttonTemplate]="button" (onSelected)="onSelected($event,e,i)"></app-query-line>
+        <ng-template #button>
+          <button *ngIf="entity.lines.length-1 === i" mat-mini-fab (click)="entity.lines.push({})">
+            <mat-icon>add</mat-icon>
+          </button>
+          <button *ngIf="!(entity.lines.length-1 === i)" mat-mini-fab (click)="entity.lines.splice(i,1)">
+            <mat-icon>remove</mat-icon>
+          </button>
+        </ng-template>
+      </div>
+    </div>
+    <button *ngIf="entities.length-1 === e" mat-mini-fab (click)="entities.push({lines: [{}]})">
+      <mat-icon>add</mat-icon>
+    </button>
+    <button *ngIf="!(entities.length === 1)" mat-mini-fab (click)="entities.splice(e,1)">
+      <mat-icon>remove</mat-icon>
+    </button>
+    <app-dropdown label="Edge" [(value)]="entity.nextEdge" [options]="_getEdgeOptions(entity.entity!)" (onSelected)="onEdgeSelected($event, e)"></app-dropdown>
+  </mat-card>
+</div>
