@@ -21,7 +21,12 @@ export class QueryBuilderComponent implements OnInit {
   constructor(public neptune: NeptuneService) { }
 
   ngOnInit(): void {
-
+    console.log(this.entities);
+    this.entities.forEach(entity => {
+      this.neptune.getEdgesForEntity(entity.entity!).subscribe(res => {
+        entity.nextEdgeOptions = res
+      })
+    })
   }
 
   onSelected(value: QueryLine, entityIndex:number, lineIndex:number){

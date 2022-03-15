@@ -34,7 +34,7 @@ export class FilterComponent implements OnInit, OnChanges {
     to: null
   })
 
-  structure = [
+  /* structure = [
     {
       id: 1,
       entity:EntityName.product,
@@ -49,7 +49,7 @@ export class FilterComponent implements OnInit, OnChanges {
       id:3,
       entity:EntityName.user
     }
-    ]
+    ] */
 
   constructor(
     private fb: FormBuilder,

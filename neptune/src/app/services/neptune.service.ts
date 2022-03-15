@@ -44,7 +44,10 @@ export class NeptuneService {
   getEdgesForEntity(entityName: string){
     return this.http.get<any>(`${this.baseApiUrl}/getedgesforentity?entityName=${entityName}`).pipe(
       map((edges: any[]) => {
-        return edges.filter((v,i,a)=>a.findIndex(t=>(t.label===v.label))===i)
+        let a = edges.filter((v,i,a)=>a.findIndex(t=>(t.label===v.label))===i)
+        return a.map(edge=> {
+          return edge.label
+        })
       })
     )
   }
