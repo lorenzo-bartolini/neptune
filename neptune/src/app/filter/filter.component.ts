@@ -17,12 +17,14 @@ export class FilterComponent implements OnInit, OnChanges {
   entities: Entity[]  = [{
     entity: EntityName.product,
     lines: [{}],
-    nextEdge:'ProductHasPurch'
+    nextEdge:'ProductHasPurch',
+    nextEdgeOptions: []
   },
   {
     entity: EntityName.purchase,
     lines:[{}],
-    nextEdge: 'PurchaseHasUser'
+    nextEdge: 'PurchaseHasUser',
+    nextEdgeOptions: []
   }]
 
   nodes = undefined

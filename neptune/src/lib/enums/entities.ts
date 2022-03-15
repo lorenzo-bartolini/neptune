@@ -15,6 +15,7 @@ export class QueryLine{
 export class Entity{
   entity?: EntityName
   nextEdge?: string
+  nextEdgeOptions?: string[]
   lines!: QueryLine[]
 }
 

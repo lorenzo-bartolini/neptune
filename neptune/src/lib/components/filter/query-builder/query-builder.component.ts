@@ -18,14 +18,10 @@ export class QueryBuilderComponent implements OnInit {
     'user_ontology']
 
 
-  constructor(private neptune: NeptuneService) { }
+  constructor(public neptune: NeptuneService) { }
 
   ngOnInit(): void {
-  }
 
-  _getEdgeOptions(entityName: string){
-    //const entityName = this.entities[entityIndex].entity!.toString()
-    return this.neptune.getEdgesForEntity(entityName).subscribe(res=>{return res})
   }
 
   onSelected(value: QueryLine, entityIndex:number, lineIndex:number){

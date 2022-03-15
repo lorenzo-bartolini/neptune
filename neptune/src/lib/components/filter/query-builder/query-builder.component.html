@@ -20,6 +20,6 @@
     <button *ngIf="!(entities.length === 1)" mat-mini-fab (click)="entities.splice(e,1)">
       <mat-icon>remove</mat-icon>
     </button>
-    <app-dropdown label="Edge" [(value)]="entity.nextEdge" [options]="_getEdgeOptions(entity.entity!)" (onSelected)="onEdgeSelected($event, e)"></app-dropdown>
+    <app-dropdown label="Edge" [(value)]="entity.nextEdge" [options]="neptune.getEdgesForEntity(entity.entity!) | async" (onSelected)="onEdgeSelected($event, e)"></app-dropdown>
   </mat-card>
 </div>
