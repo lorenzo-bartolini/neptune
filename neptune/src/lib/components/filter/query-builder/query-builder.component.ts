@@ -12,10 +12,7 @@ export class QueryBuilderComponent implements OnInit {
   @Input()entities!: Entity[]
   @Output()onValue = new EventEmitter
 
-  entityOptions =[
-    'product_ontology',
-    'purchase_ontology',
-    'user_ontology']
+  entityOptions: string[] = []
 
 
   constructor(public neptune: NeptuneService) { }
@@ -27,6 +24,10 @@ export class QueryBuilderComponent implements OnInit {
         entity.nextEdgeOptions = res
       })
     })
+
+    this.neptune.getEntityList().subscribe(res => {
+      this.entityOptions = res
+    })
   }
 
   onSelected(value: QueryLine, entityIndex:number, lineIndex:number){
@@ -36,6 +37,10 @@ export class QueryBuilderComponent implements OnInit {
 
   onEntitySelected(value: EntityName, entityIndex: number){
     this.entities[entityIndex].entity = value;
+    this.entities[entityIndex]
+    this.neptune.getEdgesForEntity(this.entities[entityIndex].entity!).subscribe(res => {
+      this.entities[entityIndex].nextEdgeOptions = res
+    })
   }
 
   onEdgeSelected(value: string, entityIndex: number){

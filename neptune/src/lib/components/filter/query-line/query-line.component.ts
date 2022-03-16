@@ -17,14 +17,7 @@ export class QueryLineComponent implements OnInit, OnChanges {
   @Input() entityLine!: QueryLine
   @Input() buttonTemplate!: TemplateRef<any>
   @Output() onSelected: EventEmitter<QueryLine> = new EventEmitter<QueryLine>()
-  fieldOptions = [
-    'season',
-    'id',
-    'category',
-    'product_name',
-    'label',
-    'hierarchy'
-  ]
+  fieldOptions: string[] = []
   operatorOptions = Object.values(Operator)
 
 
@@ -43,6 +36,14 @@ export class QueryLineComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log();
+    if(changes.entityName){
+      if(changes.entityName.currentValue !== changes.entityName.previousValue){
+        this.neptune.getFieldsForEntity(this.entityName!).subscribe(res => {
+          this.fieldOptions = res? res: []
+        })
+      }
+    }
 
   }
 

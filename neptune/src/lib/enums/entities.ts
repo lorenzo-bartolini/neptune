@@ -13,7 +13,7 @@ export class QueryLine{
 }
 
 export class Entity{
-  entity?: EntityName
+  entity?: EntityName | string
   nextEdge?: string
   nextEdgeOptions?: string[]
   lines!: QueryLine[]

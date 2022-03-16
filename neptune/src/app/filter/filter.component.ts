@@ -1,8 +1,8 @@
 import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { combineLatest } from 'rxjs';
-import {map, startWith} from 'rxjs/operators';
+import { combineLatest, Observable } from 'rxjs';
+import {map, startWith, tap} from 'rxjs/operators';
 import { Entity, EntityName } from 'src/lib/enums/entities';
 import { Product } from '../../lib/interfaces/elements';
 import { NeptuneService } from '../services/neptune.service';
@@ -21,13 +21,13 @@ export class FilterComponent implements OnInit, OnChanges {
     nextEdgeOptions: []
   },
   {
-    entity: EntityName.purchase,
+    entity: 'session_ontology',
     lines:[{}],
-    nextEdge: 'PurchaseHasUser',
+    nextEdge: 'UserHasSession',
     nextEdgeOptions: []
   }]
 
-  nodes = undefined
+  nodes:any[] = []
 
   form = this.fb.group({
     from: null,
@@ -101,11 +101,42 @@ export class FilterComponent implements OnInit, OnChanges {
     }) */
 
     //search for missing edges
+    let nodes$: Observable<any>[] = []
+    let query: Entity[] = []
+
+    this.entities.forEach((entity, index) => {
+      this.nodes.push({label: entity.entity})
+      query.push({
+        entity: entity.entity,
+        lines: entity.lines,
+        nextEdge: this.entities[index-1]? this.entities[index-1].nextEdge: undefined
+      })
+      //create Observable
+      nodes$.push(this.neptune.postQuery(query).pipe(
+        tap(res=> {
+          const i = this.nodes.findIndex(node => node.entity === entity.entity)
+          this.nodes[i] = {
+            ...this.nodes[i],
+            nodes: res
+          }
+        })
+      ))
 
 
-    this.neptune.postQuery(this.entities).subscribe(res=>{
+    })
+    //execute Observables
+    combineLatest(nodes$).subscribe(res =>{
+      console.log(res);
+
+    })
+
+
+
+
+
+    /* this.neptune.postQuery(this.entities).subscribe(res=>{
       console.log(res);
       this.nodes = res
-    })
+    }) */
   }
 }

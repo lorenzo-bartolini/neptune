@@ -18,6 +18,41 @@ export class NeptuneService {
       {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
   }
 
+  entitiesFields = [
+    {
+      label: 'product_ontology',
+      options: [
+        'season',
+        '~id',
+        'category',
+        'product_name',
+        '~label',
+        'hierarchy'
+      ]
+    },
+    {
+      label: 'session_ontology',
+      options: [
+        '~id',
+        'start',
+        'end',
+        'isauth',
+        '~label'
+      ]
+    },
+    {
+      label: 'user_ontology',
+      options: [
+        '~id',
+        'gender',
+        'age',
+        'full_name',
+        'birthday',
+        '~label'
+      ]
+    }
+  ]
+
   constructor(private http: HttpClient) { }
 
   initialize() {
@@ -34,11 +69,13 @@ export class NeptuneService {
   }
 
   getEntityList(){
-    return of([
-      'product_ontology',
-      'purchase_ontology',
-      'user_ontology'
-    ])
+    return this.http.get<any>(`${this.baseApiUrl}/getentitynames`).pipe(
+      map((entities:any[]) => {
+        return entities.map( entity => {
+          return entity.label
+        })
+      })
+    )
   }
 
   getEdgesForEntity(entityName: string){
@@ -50,6 +87,11 @@ export class NeptuneService {
         })
       })
     )
+  }
+
+  getFieldsForEntity(entityName: string){
+    let fields = this.entitiesFields.find(e => e.label === entityName)?.options
+    return of(fields)
   }
 
   getValuesForField(entityName?: string, fieldName?: string){
