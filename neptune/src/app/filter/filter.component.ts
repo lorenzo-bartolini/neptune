@@ -126,28 +126,36 @@ export class FilterComponent implements OnInit, OnChanges {
     }
   }
 
+  downloadCSV(){
+    this.IASelectorChange(this.isChecked)
+    this.neptune.postQuery(this.entities).subscribe(res => {
+      console.log(res);
+      const replacer = (key:any, value:any) => (value === null ? '' : value); // specify how you want to handle null values here
+      const header = Object.keys(res[0]);
+      const csv = res.map((row:any) =>
+        header
+          .map((fieldName) => JSON.stringify(row[fieldName], replacer))
+          .join(',')
+      );
+      csv.unshift(header.join(','));
+      const csvArray = csv.join('\r\n');
+
+      const a = document.createElement('a');
+      const blob = new Blob([csvArray], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+
+      a.href = url;
+      a.download = 'myFile.csv';
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+      this.IASelectorChange(false)
+    })
+  }
+
   submit(){
     this.IASelectorChange(this.isChecked)
-    /* this.neptune.initialize().subscribe(res => {
-      console.log(res);
 
-    }) */
-
-   /*  this.entities.forEach((entity, entityIndex) => {
-
-      //clean routine
-      entity.lines.forEach((line,lineIndex) => {
-        if(!(line.field && line.operator && line.value)){
-          this.entities[entityIndex].lines.splice(lineIndex, 1)
-        }
-      })
-      if(entity.lines.length === 0){
-        this.entities.splice(entityIndex, 1)
-      }
-
-    }) */
-
-    //search for missing edges
     this.edges = []
     this.nodes = []
     let query: Entity[] = []
@@ -213,7 +221,7 @@ export class FilterComponent implements OnInit, OnChanges {
 
 
 
-
+    this.IASelectorChange(true)
 
     /* this.neptune.postQuery(this.entities).subscribe(res=>{
       console.log(res);

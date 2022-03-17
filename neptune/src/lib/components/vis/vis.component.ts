@@ -44,6 +44,8 @@ export class VisComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if(changes.inputNodes.currentValue)
     if (changes.inputNodes.currentValue !== changes.inputNodes.previousValue) {
+      this.nodes = new vis.DataSet({});
+      this.edges = new vis.DataSet({});
       //init fisrt cluster
       let newId = Math.random().toString().slice(2,9)
       this.clusters.push({
@@ -57,7 +59,8 @@ export class VisComponent implements OnInit, OnChanges {
         id: newId,
         label: this.inputNodes[0].label + '\n' + this.inputNodes[0].nodes.length,
         //value: this.inputNodes[0].nodes,
-        type: 'cluster'
+        type: 'cluster',
+        color: 'orange'
       }])
 
 
@@ -172,6 +175,9 @@ export class VisComponent implements OnInit, OnChanges {
             nodes2.push.apply(nodes2, tempNodes)
           })
 
+          //remove duplicates
+          nodes2 = nodes2!.filter((v,i,a)=>a.findIndex(t=>(t.id===v.id))===i)
+
           newId = fromnode.id + 'c'
           //push cluster
           this.clusters.push({
@@ -200,6 +206,9 @@ export class VisComponent implements OnInit, OnChanges {
           edges = this.inputEdges.filter((e:any) => e.from === fromnode.id || e.to === fromnode.id)
           //search nodes that correspond to that edges
           nodes = this.inputNodes[i+1].nodes.filter((n:any) => edges.some((e:any)=> e.from === n.id || e.to === n.id))
+
+          //remove duplicates
+          nodes = nodes!.filter((v,i,a)=>a.findIndex(t=>(t.id===v.id))===i)
 
           newId = fromnode.id + 'c'
           //push cluster

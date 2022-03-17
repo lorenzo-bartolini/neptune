@@ -10,6 +10,7 @@
         <app-query-builder [entities]="entities" (onValue)="onValues($event)"></app-query-builder>
         <mat-card-actions>
           <button mat-button (click)="submit()">Test</button>
+          <button mat-button (click)="downloadCSV()">DownloadCSV</button>
         </mat-card-actions>
       </mat-card>
 
