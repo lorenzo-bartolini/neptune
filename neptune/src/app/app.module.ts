@@ -20,6 +20,9 @@ import {MatCardModule} from '@angular/material/card';
 import {MatInputModule} from '@angular/material/input';
 import { FilterModule } from 'src/lib/components/filter/filter.module';
 import { VisModule } from 'src/lib/components/vis/vis.module';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+
+
 
 
 
@@ -31,7 +34,8 @@ const NODE_MODULES = [
   MatFormFieldModule,
   MatCheckboxModule,
   MatCardModule,
-  MatInputModule
+  MatInputModule,
+  MatSlideToggleModule
 ]
 
 @NgModule({

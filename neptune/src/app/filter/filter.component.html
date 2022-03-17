@@ -3,6 +3,8 @@
     <div fxLayout="column" fxFlex="40">
       <mat-card>
         <app-route-selector [(form)]="form"></app-route-selector>
+
+        <mat-slide-toggle [(ngModel)]="isChecked">IA</mat-slide-toggle>
       </mat-card>
       <mat-card>
         <app-query-builder [entities]="entities" (onValue)="onValues($event)"></app-query-builder>
@@ -18,6 +20,7 @@
           fxFill
           class="vis-container"
           [inputNodes]="nodes"
+          [inputEdges]="edges"
 
         ></app-vis>
       </mat-card>

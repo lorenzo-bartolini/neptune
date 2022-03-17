@@ -98,7 +98,31 @@ export class NeptuneService {
     return this.http.get<any>(`${this.baseApiUrl}/getvaluesforfield?entityName=${entityName}&fieldName=${fieldName}`)
   }
 
+  getEdgeValues(edgeName: string){
+    return this.http.get<any>(`${this.baseApiUrl}/dynamicedges?edgeName=${edgeName}`).pipe(
+      map(edges => {
+        return edges.map((edge:any) => {
+          //split id in from e to, because indians did a shitty job
+          let str = edge.id
+
+          const [word1, from] = str.match(/\D+|\d+/g);
+          var second = str.replace(word1, "");
+          second = second.replace(from, "");
+          const [word2, to] = second.match(/\D+|\d+/g);
+
+          return {
+            ...edge,
+            from: from,
+            to: to
+          }
+        })
+      })
+    )
+  }
+
   postQuery(query: Entity[]){
+    console.log("query being sent: ",query);
+
     return this.http.post<any>(`${this.baseApiUrl}/dynamicpost`, {query: query})
   }
 }

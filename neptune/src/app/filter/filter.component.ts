@@ -1,7 +1,7 @@
 import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { combineLatest, Observable } from 'rxjs';
+import { combineLatest, forkJoin, Observable } from 'rxjs';
 import {map, startWith, tap} from 'rxjs/operators';
 import { Entity, EntityName } from 'src/lib/enums/entities';
 import { Product } from '../../lib/interfaces/elements';
@@ -17,7 +17,7 @@ export class FilterComponent implements OnInit, OnChanges {
   entities: Entity[]  = [{
     entity: EntityName.product,
     lines: [{}],
-    nextEdge:'ProductHasPurch',
+    nextEdge:'SessionHasProduct',
     nextEdgeOptions: []
   },
   {
@@ -28,6 +28,9 @@ export class FilterComponent implements OnInit, OnChanges {
   }]
 
   nodes:any[] = []
+  edges: any[] = []
+
+  isChecked: boolean = false
 
   form = this.fb.group({
     from: null,
@@ -80,7 +83,51 @@ export class FilterComponent implements OnInit, OnChanges {
     this.entities = value
   }
 
+  IASelectorChange(checked:boolean){
+    console.log(event);
+    if(checked){
+      //IA ON
+      let i = this.entities.findIndex(e => e.entity === 'session_ontology')
+      if(this.entities[i].lines.findIndex(l => l.field === 'isauth')=== -1){
+        //condition not exists
+        //OK
+      }else{
+        //condition exists
+        //seccare
+        let index = this.entities[i].lines.findIndex(l => l.field === 'isauth')
+        this.entities[i].lines.splice(index, 1)
+
+      }
+    }else{
+      //IA OFF
+      let i = this.entities.findIndex(e => e.entity === 'session_ontology')
+      if(this.entities[i].lines.findIndex(l => l.field === 'isauth')=== -1){
+        //condition not exists
+        //ADD
+        this.entities[i].lines.push({
+          field: 'isauth',
+          operator: '=',
+          value: '1'
+        })
+      }else{
+        //condition exists
+        //OK
+        let index = this.entities[i].lines.findIndex(l => l.field === 'isauth')
+        if(this.entities[i].lines[index].value === '1'){
+          //OK
+        }else{
+          //NOT OK
+          this.entities[i].lines[index].value = '1'
+        }
+
+
+      }
+
+    }
+  }
+
   submit(){
+    this.IASelectorChange(this.isChecked)
     /* this.neptune.initialize().subscribe(res => {
       console.log(res);
 
@@ -101,34 +148,68 @@ export class FilterComponent implements OnInit, OnChanges {
     }) */
 
     //search for missing edges
-    let nodes$: Observable<any>[] = []
+    this.edges = []
+    this.nodes = []
     let query: Entity[] = []
+    console.log(this.entities);
 
     this.entities.forEach((entity, index) => {
+      //prebuild nodes
       this.nodes.push({label: entity.entity})
+
+      //check previous element exists
+      if(this.entities[index-1]){
+        //add nextEdge of previous element
+        query[index-1] = {
+          ...query[index-1],
+          nextEdge: this.entities[index-1].nextEdge
+        }
+      }
+
       query.push({
         entity: entity.entity,
         lines: entity.lines,
-        nextEdge: this.entities[index-1]? this.entities[index-1].nextEdge: undefined
+        nextEdge: undefined
       })
+
       //create Observable
-      nodes$.push(this.neptune.postQuery(query).pipe(
-        tap(res=> {
-          const i = this.nodes.findIndex(node => node.entity === entity.entity)
+      this.neptune.postQuery(query).subscribe(res=> {
+          const i = this.nodes.findIndex(node => node.label === entity.entity)
           this.nodes[i] = {
             ...this.nodes[i],
-            nodes: res
+            nodes: res,
           }
+          this.nodes = this.nodes.slice()
+        }
+      )
+
+      //last round
+      if(index === this.entities.length-1 && entity.nextEdge){
+        query.push({
+          entity: entity.entity,
+          lines: entity.lines,
+          nextEdge: entity.nextEdge
         })
-      ))
 
+        this.neptune.postQuery(query).subscribe(
+          res=> {
+            this.nodes.push({
+              label: res[0].label,
+              nodes: res
+            })
+            this.nodes = this.nodes.slice()
+          })
+      }
+
+      //--------GET EDGES-------->
+      if(entity.nextEdge){
+        this.neptune.getEdgeValues(entity.nextEdge).subscribe(res => {
+          this.edges.push.apply(this.edges, res)
+        })
+      }
 
     })
-    //execute Observables
-    combineLatest(nodes$).subscribe(res =>{
-      console.log(res);
 
-    })
 
 
 
