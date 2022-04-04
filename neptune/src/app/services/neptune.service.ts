@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { of } from 'rxjs';
-import { map, mapTo, switchMap } from 'rxjs/operators';
+import { map, mapTo, switchMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Entity } from 'src/lib/enums/entities';
 import { Product } from '../../lib/interfaces/elements';
@@ -90,8 +90,7 @@ export class NeptuneService {
   }
 
   getFieldsForEntity(entityName: string){
-    let fields = this.entitiesFields.find(e => e.label === entityName)?.options
-    return of(fields)
+    return this.http.get<any>(`${this.baseApiUrl}/getfieldsforentity?entityName=${entityName}`)
   }
 
   getValuesForField(entityName?: string, fieldName?: string){
